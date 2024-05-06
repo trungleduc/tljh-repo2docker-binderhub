@@ -1,7 +1,0 @@
-hub:
-  image:
-    name: trungleduc/k8s-hub-tljh
-    tag: 3.3.7
-  services:
-    binder:
-      url: http://binderhub-binderhub-service

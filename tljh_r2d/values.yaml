@@ -1,13 +1,35 @@
-hub:
-  image:
-    name: trungleduc/k8s-hub-tljh
-    tag: 3.3.7
-  services:
-    binder:
-      url: http://binderhub-binderhub-service
+jupyterhub:
+  enabled: true
+  hub:
+    image:
+      name: trungleduc/k8s-hub-tljh
+      tag: 3.3.12
+      pullPolicy: Always
+    config:
+      BinderSpawner:
+        auth_enabled: true
+    extraFiles:
+      my_jupyterhub_config:
+        mountPath: /usr/local/etc/jupyterhub/jupyterhub_config.d/jupyterhub_config.py
+    networkPolicy:
+      enabled: false
 
-config:
-  BinderHub:
-    use_registry: false
-    base_url: /services/binder
-    enable_api_only_mode: false
+  proxy:
+    chp:
+      networkPolicy:
+        enabled: false
+
+  singleuser:
+    networkPolicy:
+      enabled: false
+
+binderhub-service:
+  config:
+    BinderHub:
+      base_url: /services/binder
+      use_registry: true
+      image_prefix: trungleduc/binder-
+      enable_api_only_mode: true
+
+  buildPodsRegistryCredentials:
+    server: "https://index.docker.io/v1/"
