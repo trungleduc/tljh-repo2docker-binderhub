@@ -1,0 +1,27 @@
+name: Build and push
+
+on:
+  push:
+    branches: main
+
+jobs:
+  build-image:
+    name: Build image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Base Setup
+        uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+      - name: Build image
+        run: |
+          set -eux
+          TAG=2.0.0
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/k8s-hub-tljh-r2d
+          echo "FULL_IMAGE_NAME=$IMAGE_NAME:$TAG" >> $GITHUB_ENV
+          docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+      - name: Push Docker image to GitHub Container Registry
+        run: |
+          docker push $FULL_IMAGE_NAME
